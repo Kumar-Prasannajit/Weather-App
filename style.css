@@ -11,7 +11,7 @@
     background: linear-gradient(45deg, #1e4d92, #2196f3);
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     padding: 20px;
 }
 
@@ -61,7 +61,7 @@ button:hover {
 }
 
 #weather-info {
-    display: none;
+    /* display: none; */
     padding: 2px 0;
     text-align: center;
 }
@@ -123,6 +123,7 @@ hr {
     padding: 15px;
     border-radius: 8px;
     transition: transform 0.3s ease;
+    margin-bottom: 10px;
 }
 
 .detail-item:hover {
@@ -141,6 +142,76 @@ hr {
     font-weight: 500;
 }
 
+#child{
+    height: fit-content;
+    width: fit-content;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 15px;
+    margin-left: 20px;
+}
+
+.favplace {
+    position: relative;
+    background-color: rgba(175, 212, 243, 0.474);
+    padding: 15px;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    width: 200px;
+}
+
+#weather-icon-child {
+    margin-bottom: 10px;
+}
+
+#weather-icon-child img {
+    width: 50px;
+    height: 50px;
+}
+
+#temp-child {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+#city-child {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 7.5px;
+}
+
+#localtime-child {
+    color: #666;
+    font-size: 8px;
+}
+
+.close-btn {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #ff4444;
+    bottom: 10px;
+    right: 10px;
+    color: white;
+    cursor: pointer;
+    font-size: 11px;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    text-align: center;
+    opacity: 0;
+}
+
+.favplace:hover .close-btn {
+    opacity: 1;
+}
+
+.close-btn:hover {
+    transform: scale(1.1);
+}
+
 @media (max-width: 480px) {
     #parent {
         width: 100%;
@@ -149,5 +220,16 @@ hr {
     
     .details {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 992px) {
+    #main {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    #child {
+        margin-left: 0;
     }
 }

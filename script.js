@@ -45,3 +45,41 @@ button.addEventListener("click", async () => {
     conditionElement.innerText = result.current.condition.text;
     feelsLikeElement.innerText = `${result.current.feelslike_c}°C`;
 });
+
+const favplace = document.getElementsByClassName("favplace");
+const addButtonFav = document.getElementById("add-fav-btn");
+const childIcon = document.getElementById("weather-img-child");
+const childTemp = document.getElementById("temp-child");
+const childCity = document.getElementById("city-child");
+const childTime = document.getElementById("localtime-child")
+const locationArr = [];
+
+addButtonFav.addEventListener("click", async () => {
+    const value = locationName.value;
+    const result = await getData(value);
+    let icon = `https:${result.current.condition.icon}`;
+    let temp = result.current.temp_c;
+    let city = result.location.name;
+    let time = result.location.localtime;
+    if(locationArr.length < 4){
+        updateArray(icon, temp, city, time);
+    }else{
+        alert("You can add only 4 favourite places !!!")
+    } 
+});
+
+function updateArray(icon, temp, city, time){
+    locationArr.push({ icon, temp, city, time });
+    console.log(locationArr);
+    updateChild(icon, temp, city, time);
+}
+function updateChild(icon, temp, city, time) {
+    childIcon.src = icon;
+    childTemp.innerText = `${temp}°C`;
+    childCity.innerText = city;
+    childTime.innerText = time;
+}
+
+function removefav() {
+
+}
