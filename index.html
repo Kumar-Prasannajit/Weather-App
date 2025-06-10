@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="main">
+        <div id="parent">
+            <div class="search-container">
+                <input type="text" name="location" id="location" placeholder="Enter City Name">
+                <button id="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+            
+            <div id="weather-info">
+                <div class="weather-icon">
+                    <img src="" alt="weather icon" id="weather-img">
+                </div>
+                <div class="temp">23°C</div>
+                <div class="city">London</div>
+                <hr>
+                <div class="localtime">2025-06-10 14:29</div>
+                <hr>
+                <div id="dets">
+                    <div class="state">State</div>
+                    <div class="country">Country</div>
+                </div>
+                <div class="details">
+                    <div class="detail-item">
+                        <h4>Humidity</h4>
+                        <p id="humidity">-22%</p>
+                    </div>
+                    <div class="detail-item">
+                        <h4>Wind Speed</h4>
+                        <p id="wind-speed">13 km/h</p>
+                    </div>
+                    <div class="detail-item">
+                        <h4>Condition</h4>
+                        <p id="condition">warm</p>
+                    </div>
+                    <div class="detail-item">
+                        <h4>Feels Like</h4>
+                        <p id="feels-like">23°C</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
