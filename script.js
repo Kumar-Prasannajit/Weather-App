@@ -90,6 +90,7 @@ function updateChild(icon, temp, city, time) {
                 <i class="fas fa-times close-btn" onclick="removeFav(${index})"></i>
         `;
         favContainer.appendChild(favDiv);
+    storeFav();
     })
 }
 
@@ -97,3 +98,15 @@ function removeFav(index) {
     locationArr.splice(index, 1);
     updateChild();
 }
+
+function storeFav() {
+    localStorage.setItem("favLocations", JSON.stringify(locationArr));
+}
+
+window.addEventListener("load",() => {
+    const storedPlaces = JSON.parse(localStorage.getItem("favLocations"));
+    if(storedPlaces){
+        locationArr.push(...storedPlaces);
+        updateChild();
+    }
+})
