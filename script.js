@@ -1,4 +1,6 @@
+const main = document.getElementById("main");
 const button = document.getElementById("search-btn");
+const favContainer = document.getElementById("child");
 const locationName = document.getElementById("location");
 const weatherInfo = document.getElementById("weather-info");
 
@@ -61,6 +63,7 @@ addButtonFav.addEventListener("click", async () => {
     let temp = result.current.temp_c;
     let city = result.location.name;
     let time = result.location.localtime;
+    main.style.justifyContent = "space-evenly"
     if(locationArr.length < 4){
         updateArray(icon, temp, city, time);
     }else{
@@ -70,16 +73,27 @@ addButtonFav.addEventListener("click", async () => {
 
 function updateArray(icon, temp, city, time){
     locationArr.push({ icon, temp, city, time });
-    console.log(locationArr);
     updateChild(icon, temp, city, time);
 }
 function updateChild(icon, temp, city, time) {
-    childIcon.src = icon;
-    childTemp.innerText = `${temp}°C`;
-    childCity.innerText = city;
-    childTime.innerText = time;
+    favContainer.innerHTML = "";
+    locationArr.forEach((location, index) => {
+        let favDiv = document.createElement("div");
+        favDiv.classList.add("favPlace");
+        favDiv.innerHTML = `
+            <div id="weather-icon-child">
+                    <img src="${location.icon}" alt="weather icon" id="weather-img-child">
+                </div>
+                <div id="temp-child">${location.temp}°C</div>
+                <div id="city-child">${location.city}</div>
+                <div id="localtime-child">${location.time}</div>
+                <i class="fas fa-times close-btn" onclick="removeFav(${index})"></i>
+        `;
+        favContainer.appendChild(favDiv);
+    })
 }
 
-function removefav() {
-
+function removeFav(index) {
+    locationArr.splice(index, 1);
+    updateChild();
 }
