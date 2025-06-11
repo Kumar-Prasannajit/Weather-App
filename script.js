@@ -18,95 +18,142 @@ const windSpeedElement = document.getElementById("wind-speed");
 const conditionElement = document.getElementById("condition");
 const feelsLikeElement = document.getElementById("feels-like");
 
-async function getData(cityName) {
-    const promise = await fetch(`http://api.weatherapi.com/v1/current.json?key=9ea4c0c509124ba79d0123251251006&q=${cityName}&aqi=yes`);
-    return await promise.json();
-}
-
-button.addEventListener("click", async () => {
-    const value = locationName.value;
-    const result = await getData(value);
-        // Show weather info container
-    weatherInfo.style.display = "block";
-    
-    // Update weather icon
-    weatherIcon.src = `https:${result.current.condition.icon}`;
-    
-    // Update main weather info
-    temperatureDiv.innerText = `${result.current.temp_c}°C`;
-    cityDiv.innerText = result.location.name;
-    locationTime.innerText = result.location.localtime;
-    
-    // Update location details
-    stateDiv.innerText = result.location.region || result.location.name;
-    countryDiv.innerText = result.location.country;
-    
-    // Update weather parameters
-    humidityElement.innerText = `${result.current.humidity}%`;
-    windSpeedElement.innerText = `${result.current.wind_kph} km/h`;
-    conditionElement.innerText = result.current.condition.text;
-    feelsLikeElement.innerText = `${result.current.feelslike_c}°C`;
-});
-
-const favplace = document.getElementsByClassName("favplace");
 const addButtonFav = document.getElementById("add-fav-btn");
-const childIcon = document.getElementById("weather-img-child");
-const childTemp = document.getElementById("temp-child");
-const childCity = document.getElementById("city-child");
-const childTime = document.getElementById("localtime-child")
-const locationArr = [];
 
-addButtonFav.addEventListener("click", async () => {
-    const value = locationName.value;
-    const result = await getData(value);
-    let icon = `https:${result.current.condition.icon}`;
-    let temp = result.current.temp_c;
-    let city = result.location.name;
-    let time = result.location.localtime;
-    main.style.justifyContent = "space-evenly"
-    if(locationArr.length < 4){
-        updateArray(icon, temp, city, time);
-    }else{
-        alert("You can add only 4 favourite places !!!")
-    } 
+let locationArr = [];
+
+// Fetch data
+async function getData(cityName) {
+    const response = await fetch(`https://api.weatherapi.com/v1/current.json?key=9ea4c0c509124ba79d0123251251006&q=${cityName}&aqi=yes`);
+    const data = await response.json();
+    return data;
+}
+
+// Update main weather panel
+button.addEventListener("click", async () => {
+    const value = locationName.value.trim();
+    if (!value) return;
+
+    try {
+        const result = await getData(value);
+        weatherInfo.style.display = "block";
+        weatherIcon.src = `https:${result.current.condition.icon}`;
+        temperatureDiv.innerText = `${result.current.temp_c}°C`;
+        cityDiv.innerText = result.location.name;
+        locationTime.innerText = result.location.localtime;
+        stateDiv.innerText = result.location.region || result.location.name;
+        countryDiv.innerText = result.location.country;
+        humidityElement.innerText = `${result.current.humidity}%`;
+        windSpeedElement.innerText = `${result.current.wind_kph} km/h`;
+        conditionElement.innerText = result.current.condition.text;
+        feelsLikeElement.innerText = `${result.current.feelslike_c}°C`;
+    } catch (error) {
+        alert("Failed to fetch weather data.");
+        console.error(error);
+    }
 });
 
-function updateArray(icon, temp, city, time){
-    locationArr.push({ icon, temp, city, time });
-    updateChild(icon, temp, city, time);
-}
-function updateChild(icon, temp, city, time) {
+// Add to favorites
+addButtonFav.addEventListener("click", async () => {
+    const value = locationName.value.trim();
+    if (!value) return;
+
+    if (locationArr.length >= 4) {
+        alert("You can add only 4 favourite places!");
+        return;
+    }
+
+    try {
+        const result = await getData(value);
+        const city = result.location.name;
+
+        // Avoid duplicate city entries
+        if (locationArr.some(loc => loc.city === city)) {
+            alert("City already added to favorites!");
+            return;
+        }
+
+        locationArr.push({
+            icon: `https:${result.current.condition.icon}`,
+            temp: result.current.temp_c,
+            city: city,
+            time: result.location.localtime
+        });
+
+        storeFav();
+        updateChild();
+        main.style.justifyContent = "space-evenly";
+    } catch (error) {
+        alert("Could not add to favorites.");
+        console.error(error);
+    }
+});
+
+//  Render favorite cards
+function updateChild() {
     favContainer.innerHTML = "";
     locationArr.forEach((location, index) => {
-        let favDiv = document.createElement("div");
+        const favDiv = document.createElement("div");
         favDiv.classList.add("favPlace");
         favDiv.innerHTML = `
             <div id="weather-icon-child">
-                    <img src="${location.icon}" alt="weather icon" id="weather-img-child">
-                </div>
-                <div id="temp-child">${location.temp}°C</div>
-                <div id="city-child">${location.city}</div>
-                <div id="localtime-child">${location.time}</div>
-                <i class="fas fa-times close-btn" onclick="removeFav(${index})"></i>
+                <img src="${location.icon}" alt="weather icon">
+            </div>
+            <div id="temp-child">${location.temp}°C</div>
+            <div id="city-child">${location.city}</div>
+            <div id="localtime-child">${location.time}</div>
+            <i class="fas fa-times close-btn" onclick="removeFav(${index})"></i>
         `;
         favContainer.appendChild(favDiv);
-    storeFav();
-    })
+    });
 }
 
+//  Remove favorite
 function removeFav(index) {
     locationArr.splice(index, 1);
+    storeFav();
     updateChild();
 }
 
+// Store entire object
 function storeFav() {
     localStorage.setItem("favLocations", JSON.stringify(locationArr));
 }
 
-window.addEventListener("load",() => {
-    const storedPlaces = JSON.parse(localStorage.getItem("favLocations"));
-    if(storedPlaces){
-        locationArr.push(...storedPlaces);
-        updateChild();
+async function updateFavoritePlaces() {
+    const updatedLocations = [];
+    
+    for (const location of locationArr) {
+        try {
+            const result = await getData(location.city);
+            updatedLocations.push({
+                icon: `https:${result.current.condition.icon}`,
+                temp: result.current.temp_c,
+                city: result.location.name,
+                time: result.location.localtime
+            });
+        } catch (error) {
+            console.error(`Failed to update ${location.city}:`, error);
+            updatedLocations.push(location);
+        }
     }
-})
+    
+    locationArr = updatedLocations;
+    storeFav();
+    updateChild();
+}
+
+// Load on page refresh
+window.addEventListener("load", async () => {
+    const stored = JSON.parse(localStorage.getItem("favLocations"));
+    if (stored && Array.isArray(stored)) {
+        locationArr = stored;
+        await updateFavoritePlaces(); // Initial update
+        if (locationArr.length > 0) {
+            main.style.justifyContent = "space-evenly";
+        }
+        
+        // Update every minute (60 seconds * 1000 milliseconds)
+        setInterval(updateFavoritePlaces, 60 * 1000);
+    }
+});
